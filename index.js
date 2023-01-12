@@ -1,46 +1,59 @@
 const inquirer = require('inquirer')
-const Employee = require('./lib/Employee');
-const Department = require('./lib/Department');
-const Roles = require('./lib/Roles');
+// const Employee = require('./lib/Employee');
+// const Department = require('./lib/Department');
+// const Roles = require('./lib/Roles');
 const mysql = require('mysql2');
+const sequelize = require('./config/connection.js');
+const Role = require('./models/Role.js');
+const Department = require('./models/Department.js');
+const Employee = require('./models/Employee.js');
 
 
-function init() {
+async function init() {
+    try {
+        await sequelize.authenticate();
+        console.log('Connection has been established successfully.');
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+    const employees = await Employee.findAll();
+    console.log(employees.every(employee => employee instanceof Employee)); // true
+    console.log("All Employee:", JSON.stringify(employees, null, 2));
     // create the connection to database
-    const db = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        database: 'employeelist_db',
-        password: 'whiskey1!'
-    });
+    // const db = mysql.createConnection({
+    //     host: 'localhost',
+    //     user: 'root',
+    //     database: 'employeelist_db',
+    //     password: 'whiskey1!'
+    // });
 
-     emp = new Employee(67, results.firstName, results.last_name, 33, 3)
-    db.query(
-        `INSERT INTO employee VALUES(${emp.getId()}, '${emp.getFirstName()}', '${emp.getLastName()}', ${emp.getRoleId()}, ${emp.getManagerId()})`,
-        function (err, results, fields) {
-            console.log(results); // results contains rows returned by server
-        }
-    )
-    db.query(
-        `SELECTconst * FROM employee`,
-        function (err, results, fields) {
-            console.log(results); // results contains rows returned by server
-        }
-    );
+    //  emp = new Employee(67, results.firstName, results.last_name, 33, 3)
+    // db.query(
+    //     `INSERT INTO employee VALUES(${emp.getId()}, '${emp.getFirstName()}', '${emp.getLastName()}', ${emp.getRoleId()}, ${emp.getManagerId()})`,
+    //     function (err, results, fields) {
+    //         console.log(results); // results contains rows returned by server
+    //     }
+    // )
+    // db.query(
+    //     `SELECTconst * FROM employee`,
+    //     function (err, results, fields) {
+    //         console.log(results); // results contains rows returned by server
+    //     }
+    // );
 
-    emp = new Department(67, results.department_name)
-    db.query(
-        `INSERT INTO department VALUES(${emp.getId()}, '${emp.getDepartmentName()}')`,
-        function (err, results, fields) {
-            console.log(results); // results contains rows returned by server
-        }
-    )
-    db.query(
-        `SELECTconst * FROM department`,
-        function (err, results, fields) {
-            console.log(results); // results contains rows returned by server
-        }
-    );
+    // emp = new Department(67, results.department_name)
+    // db.query(
+    //     `INSERT INTO department VALUES(${emp.getId()}, '${emp.getDepartmentName()}')`,
+    //     function (err, results, fields) {
+    //         console.log(results); // results contains rows returned by server
+    //     }
+    // )
+    // db.query(
+    //     `SELECTconst * FROM department`,
+    //     function (err, results, fields) {
+    //         console.log(results); // results contains rows returned by server
+    //     }
+    // );
 };
 
 
