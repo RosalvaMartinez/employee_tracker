@@ -8,6 +8,8 @@ const Role = require('./models/Role.js');
 const Department = require('./models/Department.js');
 const Employee = require('./models/Employee.js');
 const prompts = require('./lib/prompts.js');
+const cTable = require('console.table');
+const { role } = require('./lib/prompts.js');
 
 
 async function init() {
@@ -20,7 +22,7 @@ async function init() {
 
     do {
         var results = await inquirer.prompt(prompts.menu);
-        ///////
+        ////
         switch (results.choice) {
             case 'View All Employees':
                 viewAllEmployees();
@@ -119,13 +121,17 @@ async function init() {
 
 // >quit
 
-function viewAllEmployees() {
+async function viewAllEmployees() {
     //present employee table
     console.log('viewAllEmployees()')
+    const employees = await Employee.findAll();
+    console.table(JSON.parse(JSON.stringify(employees, null, 2)));
+    
 };
 
-function addEmployee() {
+async function addEmployee() {
     console.log("addEmployee()")
+    var employee = await inquirer.prompt(prompts.employeee);
     //PROMPT: Enter employees first name
     //input 
     //PROMPT: Enter employees last name
@@ -138,8 +144,9 @@ function addEmployee() {
     //add employee to employee table 
 };
 
-function updateEmployeeRole() {
+async function updateEmployeeRole() {
     console.log("updateEmployeeRole()")
+    var update = await inquirer.prompt(prompts.updateEmployee);
     //PROMPT: Enter name of Employee
     //input
     //POMPT: Select Role
@@ -147,13 +154,17 @@ function updateEmployeeRole() {
     //update employee table 
 };
 
-function viewAllRoles() {
+async function viewAllRoles() {
     console.log("viewAllRoles()")
+    const roles = await Role.findAll();
+    console.table(JSON.parse(JSON.stringify(roles, null, 2)));
+
     //present roles table
 };
 
-function addRole() {
+async function addRole() {
     console.log("addRole()")
+    var role = await inquirer.prompt(prompts.role);
     //PROMPT: Enter name of role
     //input
     //PROMPT: Enter salary
@@ -164,13 +175,17 @@ function addRole() {
     //add employee to role table 
 };
 
-function viewAllDepartments() {
+async function viewAllDepartments() {
     console.log("viewAllDepartments()")
+    const departments = await Department.findAll();
+    console.table(JSON.parse(JSON.stringify(departments, null, 2)));
+
     //present department table
 };
 
-function addDepartment() {
+async function addDepartment() {
     console.log("addDepartment()")
+    var department = await inquirer.prompt(prompts.department);
     //PROMPT: Enter name of Department
     //input
     //auto create department ID
