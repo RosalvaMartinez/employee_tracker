@@ -7,6 +7,7 @@ const sequelize = require('./config/connection.js');
 const Role = require('./models/Role.js');
 const Department = require('./models/Department.js');
 const Employee = require('./models/Employee.js');
+const prompts = require('./lib/prompts.js');
 
 
 async function init() {
@@ -16,19 +17,54 @@ async function init() {
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
-    const employees = await Employee.findAll();
-    const jane = await Employee.create({first_name: "Jane", last_name: "Doe", role_id: 33, manager_id: 09});
-    console.log("All Employee:", JSON.stringify(employees, null, 2));
+
+    do {
+        var results = await inquirer.prompt(prompts.menu);
+        ///////
+        switch (results.choice) {
+            case 'View All Employees':
+                viewAllEmployees();
+                break;
+            case 'Add Employee':
+                addEmployee();
+                break;
+            case 'Update Employee Role':
+                updateEmployeeRole();
+                break;
+            case 'View All Roles':
+                viewAllRoles();
+                break;
+            case 'Add Role':
+                addRole();
+                break;
+            case 'View All Departments':
+                viewAllDepartments();
+                break;
+            case 'Add Department':
+                addDepartment();
+                break;
+            case 'Quit':
+                break;
+        }
+        ///////
+    } while (results.choice !== "Quit")
+    console.log("exiting program");
 
 
-    const departments = await Department.findAll();
-    const  sales = await Department.create({ department_name: "Jane"});
-    console.log("All Department:", JSON.stringify(departments, null, 2));
+
+    // const employees = await Employee.findAll();
+    // const jane = await Employee.create({first_name: "Jane", last_name: "Doe", role_id: 33, manager_id: 09});
+    // console.log("All Employee:", JSON.stringify(employees, null, 2));
 
 
-    const roles = await Role.findAll();
-    const sweeper = await Role.create({ title: "Jane", salary: 88000, department_id: 88});
-    console.log("All Roles:", JSON.stringify(roles, null, 2));
+    // const departments = await Department.findAll();
+    // const  sales = await Department.create({ department_name: "Jane"});
+    // console.log("All Department:", JSON.stringify(departments, null, 2));
+
+
+    // const roles = await Role.findAll();
+    // const sweeper = await Role.create({ title: "Jane", salary: 88000, department_id: 88});
+    // console.log("All Roles:", JSON.stringify(roles, null, 2));
 
 
     // create the connection to database
@@ -83,11 +119,13 @@ async function init() {
 
 // >quit
 
-function viewALLEmployees() {
+function viewAllEmployees() {
     //present employee table
+    console.log('viewAllEmployees()')
 };
 
 function addEmployee() {
+    console.log("addEmployee()")
     //PROMPT: Enter employees first name
     //input 
     //PROMPT: Enter employees last name
@@ -101,6 +139,7 @@ function addEmployee() {
 };
 
 function updateEmployeeRole() {
+    console.log("updateEmployeeRole()")
     //PROMPT: Enter name of Employee
     //input
     //POMPT: Select Role
@@ -109,10 +148,12 @@ function updateEmployeeRole() {
 };
 
 function viewAllRoles() {
+    console.log("viewAllRoles()")
     //present roles table
 };
 
 function addRole() {
+    console.log("addRole()")
     //PROMPT: Enter name of role
     //input
     //PROMPT: Enter salary
@@ -124,10 +165,12 @@ function addRole() {
 };
 
 function viewAllDepartments() {
+    console.log("viewAllDepartments()")
     //present department table
 };
 
 function addDepartment() {
+    console.log("addDepartment()")
     //PROMPT: Enter name of Department
     //input
     //auto create department ID
