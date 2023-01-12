@@ -1,7 +1,4 @@
 const inquirer = require('inquirer')
-// const Employee = require('./lib/Employee');
-// const Department = require('./lib/Department');
-// const Roles = require('./lib/Roles');
 const mysql = require('mysql2');
 const sequelize = require('./config/connection.js');
 const Role = require('./models/Role.js');
@@ -10,6 +7,7 @@ const Employee = require('./models/Employee.js');
 const prompts = require('./lib/prompts.js');
 const cTable = require('console.table');
 const { role } = require('./lib/prompts.js');
+const { Op } = require("sequelize");
 
 
 async function init() {
@@ -22,7 +20,6 @@ async function init() {
 
     do {
         var results = await inquirer.prompt(prompts.menu);
-        ////
         switch (results.choice) {
             case 'View All Employees':
                 viewAllEmployees();
@@ -48,7 +45,6 @@ async function init() {
             case 'Quit':
                 break;
         }
-        ///////
     } while (results.choice !== "Quit")
     console.log("exiting program");
 
@@ -122,16 +118,37 @@ async function init() {
 // >quit
 
 async function viewAllEmployees() {
-    //present employee table
-    console.log('viewAllEmployees()')
+    console.log('viewAllEmployees()');
     const employees = await Employee.findAll();
+    //adds new line in terminal
+    console.log('');
     console.table(JSON.parse(JSON.stringify(employees, null, 2)));
     
 };
 
 async function addEmployee() {
     console.log("addEmployee()")
-    var employee = await inquirer.prompt(prompts.employeee);
+    var roles = await Role.findAll({
+        attributes: ["title"]
+    }); 
+    roles = JSON.parse(JSON.stringify(roles, null, 2));
+    prompts.employee[2].choices = roles.map(role => { return role.title})
+
+    const managers = await Employee.findAll({
+        attributes: ['first_name', 'last_name'],
+        where: {
+          [Op.or]: [
+            { role_id: 2 },
+            { role_id: 4 },
+            { role_id: 5 }
+          ]
+        }
+      });
+
+    prompts.employee[3].choices = managers.map(manager => { return manager.first_name + ' ' + manager.last_name})
+
+    var employee = await inquirer.prompt(prompts.employee);
+    console.log(employee)
     //PROMPT: Enter employees first name
     //input 
     //PROMPT: Enter employees last name
@@ -157,9 +174,9 @@ async function updateEmployeeRole() {
 async function viewAllRoles() {
     console.log("viewAllRoles()")
     const roles = await Role.findAll();
+    //adds new line in terminal
+    console.log('');
     console.table(JSON.parse(JSON.stringify(roles, null, 2)));
-
-    //present roles table
 };
 
 async function addRole() {
@@ -178,9 +195,9 @@ async function addRole() {
 async function viewAllDepartments() {
     console.log("viewAllDepartments()")
     const departments = await Department.findAll();
+    //adds new line in terminal
+    console.log('');
     console.table(JSON.parse(JSON.stringify(departments, null, 2)));
-
-    //present department table
 };
 
 async function addDepartment() {
