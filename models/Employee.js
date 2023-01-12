@@ -8,7 +8,8 @@ Employee.init(
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
-      autoIncrement: true
+      autoIncrement: true,
+      allowNull: false
     },
     first_name: {
       type: DataTypes.STRING

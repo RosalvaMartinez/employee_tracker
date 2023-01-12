@@ -4,7 +4,7 @@ const inquirer = require('inquirer')
 // const Roles = require('./lib/Roles');
 const mysql = require('mysql2');
 const sequelize = require('./config/connection.js');
-const Roles = require('./models/Role.js');
+const Role = require('./models/Role.js');
 const Department = require('./models/Department.js');
 const Employee = require('./models/Employee.js');
 
@@ -17,14 +17,20 @@ async function init() {
         console.error('Unable to connect to the database:', error);
     }
     const employees = await Employee.findAll();
+    const jane = await Employee.create({first_name: "Jane", last_name: "Doe", role_id: 33, manager_id: 09});
     console.log("All Employee:", JSON.stringify(employees, null, 2));
-    
+
 
     const departments = await Department.findAll();
+    const  sales = await Department.create({ department_name: "Jane"});
     console.log("All Department:", JSON.stringify(departments, null, 2));
 
-    const roles = await Roles.findAll();
+
+    const roles = await Role.findAll();
+    const sweeper = await Role.create({ title: "Jane", salary: 88000, department_id: 88});
     console.log("All Roles:", JSON.stringify(roles, null, 2));
+
+
     // create the connection to database
     // const db = mysql.createConnection({
     //     host: 'localhost',
