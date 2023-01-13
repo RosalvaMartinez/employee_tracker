@@ -6,11 +6,10 @@ const Department = require('./models/Department.js');
 const Employee = require('./models/Employee.js');
 const prompts = require('./lib/prompts.js');
 const cTable = require('console.table');
-const { role, department } = require('./lib/prompts.js');
-const { Op } = require("sequelize");
 
 
 async function init() {
+    //error check!
     try {
         await sequelize.authenticate();
         console.log('Connection has been established successfully.');
@@ -19,6 +18,7 @@ async function init() {
     }
 
     do {
+        //PROMPT: menu list of options
         var results = await inquirer.prompt(prompts.menu);
         switch (results.choice) {
             case 'View All Employees':
@@ -45,10 +45,12 @@ async function init() {
             case 'Quit':
                 break;
         }
+        //keep showing menu choices until "Quit" is chosen
     } while (results.choice !== "Quit")
     console.log("exiting program");
 };
 
+//Shows Employees table
 async function viewAllEmployees() {
     const employees = await Employee.findAll();
     //adds new line in terminal
@@ -57,7 +59,18 @@ async function viewAllEmployees() {
 
 };
 
+//Adds a new Employee with a new role
 async function addEmployee() {
+    //PROMPT: Enter employees first name
+    //input 
+    //PROMPT: Enter employees last name
+    //input
+    //PROMPT: Enter employees role
+    //querry db for role options(roles table.title)
+    //PROMPT: Enter employees manager
+    //querry db for manager name options(employee table.title.manager)
+    //auto create Employee ID
+    //add employee to employee table 
     var roles = await Role.findAll();
     roles = JSON.parse(JSON.stringify(roles, null, 2));
     prompts.employee[2].choices = roles.map(role => { return role.title })
@@ -77,7 +90,13 @@ async function addEmployee() {
     const newEmployee = await Employee.create({ first_name: employee.firstName, last_name: employee.lastName, role_id: roleId[0].id, manager_id: managerId[0].id });
 };
 
+//Updates chosen employees role and saves to db
 async function updateEmployeeRole() {
+    //PROMPT: Enter name of Employee
+    //input
+    //POMPT: Select Role
+    //querry db for role options(roles table.title)
+    //update employee table 
     var employees = await Employee.findAll();
     employees = JSON.parse(JSON.stringify(employees, null, 2));
     prompts.updateEmployee[0].choices = employees.map(employee => { return employee.first_name + ' ' + employee.last_name})
@@ -95,6 +114,7 @@ async function updateEmployeeRole() {
 
 };
 
+//Presents Roles table
 async function viewAllRoles() {
     const roles = await Role.findAll();
     //adds new line in terminal
@@ -102,17 +122,25 @@ async function viewAllRoles() {
     console.table(JSON.parse(JSON.stringify(roles, null, 2)));
 };
 
+//Adds a new role
 async function addRole() {
+    //PROMPT: Enter name of role
+    //input
+    //PROMPT: Enter salary
+    //input
+    //PROMPT: Enter Department
+    //querry db for Department options(departments table.department_name)
+    //auto create role ID
+    //add employee to role table 
     var departments = await Department.findAll();
     departments = JSON.parse(JSON.stringify(departments, null, 2));
     prompts.role[2].choices = departments.map(department => { return department.department_name })
     var role = await inquirer.prompt(prompts.role);
     var departmentId = departments.filter(department => department.department_name === role.choice)
-    const newRole = await Role.create({ title: role.role, salary: role.salary, department_id: departmentId[0].id });
-
-   
+    const newRole = await Role.create({ title: role.role, salary: role.salary, department_id: departmentId[0].id }); 
 };
 
+//present department table
 async function viewAllDepartments() {
     const departments = await Department.findAll();
     //adds new line in terminal
@@ -120,10 +148,14 @@ async function viewAllDepartments() {
     console.table(JSON.parse(JSON.stringify(departments, null, 2)));
 };
 
+
 async function addDepartment() {
+    //PROMPT: Enter name of Department
+    //input
+    //auto create department ID
+    //save input to deoartment table
     var department = await inquirer.prompt(prompts.department);
     const newDepartment = await Department.create({department_name: department.name});
-    
 };
 
 
