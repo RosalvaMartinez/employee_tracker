@@ -22,25 +22,25 @@ async function init() {
         var results = await inquirer.prompt(prompts.menu);
         switch (results.choice) {
             case 'View All Employees':
-                viewAllEmployees();
+                await viewAllEmployees();
                 break;
             case 'Add Employee':
-                addEmployee();
+                await addEmployee();
                 break;
             case 'Update Employee Role':
-                updateEmployeeRole();
+                await updateEmployeeRole();
                 break;
             case 'View All Roles':
-                viewAllRoles();
+                await viewAllRoles();
                 break;
             case 'Add Role':
-                addRole();
+                await addRole();
                 break;
             case 'View All Departments':
-                viewAllDepartments();
+                await viewAllDepartments();
                 break;
             case 'Add Department':
-                addDepartment();
+                await addDepartment();
                 break;
             case 'Quit':
                 break;
@@ -63,59 +63,10 @@ async function init() {
     // const roles = await Role.findAll();
     // const sweeper = await Role.create({ title: "Jane", salary: 88000, department_id: 88});
     // console.log("All Roles:", JSON.stringify(roles, null, 2));
-
-
-    // create the connection to database
-    // const db = mysql.createConnection({
-    //     host: 'localhost',
-    //     user: 'root',
-    //     database: 'employeelist_db',
-    //     password: 'whiskey1!'
-    // });
-
-    //  emp = new Employee(67, results.firstName, results.last_name, 33, 3)
-    // db.query(
-    //     `INSERT INTO employee VALUES(${emp.getId()}, '${emp.getFirstName()}', '${emp.getLastName()}', ${emp.getRoleId()}, ${emp.getManagerId()})`,
-    //     function (err, results, fields) {
-    //         console.log(results); // results contains rows returned by server
-    //     }
-    // )
-    // db.query(
-    //     `SELECTconst * FROM employee`,
-    //     function (err, results, fields) {
-    //         console.log(results); // results contains rows returned by server
-    //     }
-    // );
-
-    // emp = new Department(67, results.department_name)
-    // db.query(
-    //     `INSERT INTO department VALUES(${emp.getId()}, '${emp.getDepartmentName()}')`,
-    //     function (err, results, fields) {
-    //         console.log(results); // results contains rows returned by server
-    //     }
-    // )
-    // db.query(
-    //     `SELECTconst * FROM department`,
-    //     function (err, results, fields) {
-    //         console.log(results); // results contains rows returned by server
-    //     }
-    // );
 };
 
 
-// What would you like to do? 
 
-// >View All Employees
-// >Add Employee
-// >Update Employee Role
-
-// >View All Roles
-// >Add Role
-
-// >View All Departments
-// >Add Department
-
-// >quit
 
 async function viewAllEmployees() {
     console.log('viewAllEmployees()');
@@ -123,42 +74,31 @@ async function viewAllEmployees() {
     //adds new line in terminal
     console.log('');
     console.table(JSON.parse(JSON.stringify(employees, null, 2)));
-    
+
 };
 
 async function addEmployee() {
-    console.log("addEmployee()")
     var roles = await Role.findAll({
         attributes: ["title"]
-    }); 
+    });
     roles = JSON.parse(JSON.stringify(roles, null, 2));
-    prompts.employee[2].choices = roles.map(role => { return role.title})
+    prompts.employee[2].choices = roles.map(role => { return role.title })
 
-    const managers = await Employee.findAll({
+    var managers = await Employee.findAll({
         attributes: ['first_name', 'last_name'],
         where: {
-          [Op.or]: [
-            { role_id: 2 },
-            { role_id: 4 },
-            { role_id: 5 }
-          ]
+            [Op.or]: [
+                { role_id: 2 },
+                { role_id: 4 },
+                { role_id: 5 }
+            ]
         }
-      });
-
-    prompts.employee[3].choices = managers.map(manager => { return manager.first_name + ' ' + manager.last_name})
+    });
+    managers = JSON.parse(JSON.stringify(managers, null, 2));
+    prompts.employee[3].choices = managers.map(manager => { return manager.first_name + ' ' + manager.last_name })
 
     var employee = await inquirer.prompt(prompts.employee);
-    console.log(employee)
-    //PROMPT: Enter employees first name
-    //input 
-    //PROMPT: Enter employees last name
-    //input
-    //PROMPT: Enter employees role
-    //querry db for role options(roles table.title)
-    //PROMPT: Enter employees manager
-    //querry db for manager name options(employee table.title.manager)
-    //auto create Employee ID
-    //add employee to employee table 
+    const newEmployee = await Employee.create({ first_name: employee.firstName, last_name: employee.lastName, role_id: employee.choice, manager_id: employee.managerChoice });
 };
 
 async function updateEmployeeRole() {
