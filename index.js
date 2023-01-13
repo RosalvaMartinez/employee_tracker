@@ -50,7 +50,6 @@ async function init() {
 };
 
 async function viewAllEmployees() {
-    console.log('viewAllEmployees()');
     const employees = await Employee.findAll();
     //adds new line in terminal
     console.log('');
@@ -115,6 +114,7 @@ async function viewAllDepartments() {
 
 async function addDepartment() {
     var department = await inquirer.prompt(prompts.department);
+    const newDepartment = await Department.create({department_name: department.name});
     
 };
 
