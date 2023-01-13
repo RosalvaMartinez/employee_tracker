@@ -78,12 +78,21 @@ async function addEmployee() {
 };
 
 async function updateEmployeeRole() {
+    var employees = await Employee.findAll();
+    employees = JSON.parse(JSON.stringify(employees, null, 2));
+    prompts.updateEmployee[0].choices = employees.map(employee => { return employee.first_name + ' ' + employee.last_name})
+    var roles = await Role.findAll();
+    roles = JSON.parse(JSON.stringify(roles, null, 2));
+    prompts.updateEmployee[1].choices = roles.map(role => { return role.title })
     var update = await inquirer.prompt(prompts.updateEmployee);
-    //PROMPT: Enter name of Employee
-    //input
-    //POMPT: Select Role
-    //querry db for role options(roles table.title)
-    //update employee table 
+    var employeeId = employees.filter(employee => employee.first_name + ' ' + employee.last_name === update.employee)
+    var roleId = roles.filter(role => role.title === update.role)
+    const newUpdate = await Employee.update({ role_id: roleId[0].id }, { 
+        where: {
+            id: employeeId[0].id
+        }
+     });
+
 };
 
 async function viewAllRoles() {
@@ -96,7 +105,6 @@ async function viewAllRoles() {
 async function addRole() {
     var departments = await Department.findAll();
     departments = JSON.parse(JSON.stringify(departments, null, 2));
-    console.log(departments)
     prompts.role[2].choices = departments.map(department => { return department.department_name })
     var role = await inquirer.prompt(prompts.role);
     var departmentId = departments.filter(department => department.department_name === role.choice)
