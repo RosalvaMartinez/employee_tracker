@@ -6,7 +6,7 @@ const Department = require('./models/Department.js');
 const Employee = require('./models/Employee.js');
 const prompts = require('./lib/prompts.js');
 const cTable = require('console.table');
-const { role } = require('./lib/prompts.js');
+const { role, department } = require('./lib/prompts.js');
 const { Op } = require("sequelize");
 
 
@@ -47,26 +47,7 @@ async function init() {
         }
     } while (results.choice !== "Quit")
     console.log("exiting program");
-
-
-
-    // const employees = await Employee.findAll();
-    // const jane = await Employee.create({first_name: "Jane", last_name: "Doe", role_id: 33, manager_id: 09});
-    // console.log("All Employee:", JSON.stringify(employees, null, 2));
-
-
-    // const departments = await Department.findAll();
-    // const  sales = await Department.create({ department_name: "Jane"});
-    // console.log("All Department:", JSON.stringify(departments, null, 2));
-
-
-    // const roles = await Role.findAll();
-    // const sweeper = await Role.create({ title: "Jane", salary: 88000, department_id: 88});
-    // console.log("All Roles:", JSON.stringify(roles, null, 2));
 };
-
-
-
 
 async function viewAllEmployees() {
     console.log('viewAllEmployees()');
@@ -114,15 +95,15 @@ async function viewAllRoles() {
 };
 
 async function addRole() {
+    var departments = await Department.findAll();
+    departments = JSON.parse(JSON.stringify(departments, null, 2));
+    console.log(departments)
+    prompts.role[2].choices = departments.map(department => { return department.department_name })
     var role = await inquirer.prompt(prompts.role);
-    //PROMPT: Enter name of role
-    //input
-    //PROMPT: Enter salary
-    //input
-    //PROMPT: Enter Department
-    //querry db for Department options(departments table.department_name)
-    //auto create role ID
-    //add employee to role table 
+    var departmentId = departments.filter(department => department.department_name === role.choice)
+    const newRole = await Role.create({ title: role.role, salary: role.salary, department_id: departmentId[0].id });
+
+   
 };
 
 async function viewAllDepartments() {
@@ -134,10 +115,7 @@ async function viewAllDepartments() {
 
 async function addDepartment() {
     var department = await inquirer.prompt(prompts.department);
-    //PROMPT: Enter name of Department
-    //input
-    //auto create department ID
-    //save input to deoartment table
+    
 };
 
 
