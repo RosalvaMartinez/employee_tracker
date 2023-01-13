@@ -78,31 +78,26 @@ async function viewAllEmployees() {
 };
 
 async function addEmployee() {
-    var roles = await Role.findAll({
-        attributes: ["title"]
-    });
+    var roles = await Role.findAll();
     roles = JSON.parse(JSON.stringify(roles, null, 2));
     prompts.employee[2].choices = roles.map(role => { return role.title })
 
     var managers = await Employee.findAll({
-        attributes: ['first_name', 'last_name'],
         where: {
-            [Op.or]: [
-                { role_id: 2 },
-                { role_id: 4 },
-                { role_id: 5 }
-            ]
+           manager_id: null
         }
     });
     managers = JSON.parse(JSON.stringify(managers, null, 2));
     prompts.employee[3].choices = managers.map(manager => { return manager.first_name + ' ' + manager.last_name })
 
+
     var employee = await inquirer.prompt(prompts.employee);
-    const newEmployee = await Employee.create({ first_name: employee.firstName, last_name: employee.lastName, role_id: employee.choice, manager_id: employee.managerChoice });
+    var roleId = roles.filter(role => role.title === employee.choice)
+    var managerId = managers.filter(manager => manager.first_name + ' ' + manager.last_name === employee.managerChoice)
+    const newEmployee = await Employee.create({ first_name: employee.firstName, last_name: employee.lastName, role_id: roleId[0].id, manager_id: managerId[0].id });
 };
 
 async function updateEmployeeRole() {
-    console.log("updateEmployeeRole()")
     var update = await inquirer.prompt(prompts.updateEmployee);
     //PROMPT: Enter name of Employee
     //input
@@ -112,7 +107,6 @@ async function updateEmployeeRole() {
 };
 
 async function viewAllRoles() {
-    console.log("viewAllRoles()")
     const roles = await Role.findAll();
     //adds new line in terminal
     console.log('');
@@ -120,7 +114,6 @@ async function viewAllRoles() {
 };
 
 async function addRole() {
-    console.log("addRole()")
     var role = await inquirer.prompt(prompts.role);
     //PROMPT: Enter name of role
     //input
@@ -133,7 +126,6 @@ async function addRole() {
 };
 
 async function viewAllDepartments() {
-    console.log("viewAllDepartments()")
     const departments = await Department.findAll();
     //adds new line in terminal
     console.log('');
@@ -141,7 +133,6 @@ async function viewAllDepartments() {
 };
 
 async function addDepartment() {
-    console.log("addDepartment()")
     var department = await inquirer.prompt(prompts.department);
     //PROMPT: Enter name of Department
     //input
